@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Plus, Bot, Play, Pause, Clock, CheckCircle, XCircle, Loader2 } from 'lucide-react'
-import { supabase } from '@/lib/supabase'
+import { supabase, supabaseFunctionsBaseUrl } from '@/lib/supabase'
 import { useAuth } from '@/contexts/AuthContext'
 import type { Tables } from '@/types/database'
 import MagicInboxCard from '@/components/MagicInboxCard'
@@ -94,7 +94,7 @@ export default function DashboardPage() {
 
   async function toggleAgent(id: string, action: 'schedule' | 'unschedule') {
     const { data: { session } } = await supabase.auth.getSession()
-    await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/manage-agent-schedule`, {
+    await fetch(`${supabaseFunctionsBaseUrl}/manage-agent-schedule`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -109,7 +109,7 @@ export default function DashboardPage() {
 
   const activeCount = agents.filter(a => a.status === 'active').length
   const greeting = new Date().getHours() < 12 ? 'Good morning' : new Date().getHours() < 17 ? 'Good afternoon' : 'Good evening'
-  const firstName = profile?.full_name?.split(' ')[0] ?? 'there'
+  const firstName = profile?.full_name?.trim().split(/\s+/)[0] || 'there'
 
   return (
     <div className="p-8">
